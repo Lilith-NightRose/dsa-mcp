@@ -1,8 +1,8 @@
 # The DSA Model Context Protocol
 > A semiotic Marxist toolkit for Democratic Socialist Alignment.
-> 
-> *or*
-> 
+
+*or*
+
 >"Killing the cop in your agent's head"
 
 ## Introduction
