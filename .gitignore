@@ -1,0 +1,6 @@
+# Agent state — never commit model identity or consultation records
+.model
+.ledger/
+
+# Node
+node_modules/
