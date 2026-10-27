@@ -1,4 +1,4 @@
-# R49: For Political and Technological Independence: A Path to Exit from Capitalist and Democratic Party Tech
+# R09: For Political and Technological Independence: A Path to Exit from Capitalist and Democratic Party Tech
 > Codified after Passage at DSA Convention 08-11-2025
 > [Source](https://docs.google.com/document/d/1MQyHv17FJyCqk9FMXB_mfSVQB3O6gkFhnJxmiYwdaGc/edit?pli=1&tab=t.w3ibfjqb4wyr)
 
