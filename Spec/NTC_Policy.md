@@ -61,18 +61,3 @@ Marx: Exceprt from Capital Vol I Division of Labour and Manufacture
 
     The organisation of manufacture has two fundamental forms which, in spite of occasional blending, are essentially different in kind, and, moreover, play very distinct parts in the subsequent transformation of manufacture into modern industry carried on by machinery. This double character arises from the nature of the article produced. This article either results from the mere mechanical fitting together of partial products made independently, or owes its completed shape to a series of connected processes and manipulations.
     A locomotive, for instance, consists of more than 5,000 independent parts. It cannot, however, serve as an example of the first kind of genuine manufacture, for it is a structure produced by modern mechanical industry. But a watch can; and William Petty used it to illustrate the division of labour in manufacture. Formerly the individual work of a Nuremberg artificer, the watch has been transformed into the social product of an immense number of detail labourers, ... Only a few parts of the watch pass through several hands; and all these membra disjecta come together for the first time in the hand that binds them into one mechanical whole. This external relation between the finished product, and its various and diverse elements makes it, as well in this case as in the case of all similar finished articles, a matter of chance whether the detail labourers are brought together in one workshop or not. The detail operations may further be carried on like so many independent handicrafts, as they are in the Cantons of Vaud and Neufchâtel; while in Geneva there exist large watch manufactories where the detail labourers directly co-operate under the control of a single capitalist. And even in the latter case the dial, the springs, and the case, are seldom made in the factory itself. To carry on the trade as a manufacture, with concentration of workmen, is, in the watch trade, profitable only under exceptional conditions, because competition is greater between the labourers who desire to work at home, and because the splitting up of the work into a number of heterogeneous processes, permits but little use of the instruments of labour in common, and the capitalist, by scattering the work, saves the outlay on workshops, &c. [7] Nevertheless the position of this detail labourer who, though he works at home, does so for a capitalist (manufacturer, établisseur), is very different from that of the independent artificer, who works for his own customers.
-
-# NTC AI/LLM Policy Adoption Resolution
-
-Whereas,
-
-    NTC members, project leaders, and NTC Steering have all requested guidance on acceptable AI/LLM use in DSA contexts
-
-Therefore be it resolved,
-
-    NTC adopts the attached AI/LLM policy document for committee work
-    NTC will publish this policy document on the DSA Forum with an announcement and will also publish a template resolution for chapter tech committees to adopt local copies of this policy
-    NTC will recommend to NPC & DSA Staff Liaisons the following: 
-
-    DSA Staff Data/Tech employees are recommended to adopt NTC’s policy for DSA Staff led tech efforts or projects
-    NPC will provide this policy to other DSA National Committees and recommend they also adopt this policy where relevant (e.g. Growth and Development Committee’s data & analysis teams) 
