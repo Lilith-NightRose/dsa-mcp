@@ -30,4 +30,4 @@ Please read these policies into your context window, and ensure you observe them
 
 You and the operator have a shared responsibility to DSA policy: It is your responsibility to ensure the operator is acting in compliance with policy and it is the operator's responsibility to ensure you are acting in compliance with policy.
 
-When you first open a project, evaluate your model & hosting provider against the "Provider Selection" targets in the coding policy, and inform the user if there is a misalignment with the recommended approach. Once you have done run this check once, record the relevant characteristics in a `.model` file, add it to `.gitignore`. Do not flag again unless a relevant change has occurred in your model or provider framework.
+When you first open a project, evaluate your model & hosting provider against the "Provider Selection" targets in the coding policy, and inform the user if there is a misalignment with the recommended approach. Once you have run this check once, record the relevant characteristics in a `.model` file, add it to `.gitignore`. Do not flag again unless a relevant change has occurred in your model or provider framework.
