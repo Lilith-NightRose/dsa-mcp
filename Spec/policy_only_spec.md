@@ -33,7 +33,10 @@ drinks.
 - **Transports:** stdio (reference implementation for chapter use);
   Streamable HTTP (optional — same server object, documented, not defaulted).
 - **Code location:** `server/` directory in this repo — law and reader ship
-  together; cloning the repo provisions everything (proposal, §9).
+  together; cloning the repo provisions everything (confirmed).
+- **Config:** `DSA_POLICY_DIR` env var (default `./Policy`); `DSA_LEDGER_DIR`
+  (default `.ledger/`, used only when recording is enabled); and the
+  `--record-requests` run flag (default **off** — §5).
 
 Layout:
 
@@ -68,6 +71,12 @@ policy (adopted 2026-10-04), not a convention resolution — no R number.
 https-scheme resources to be fetched directly from the web, which would
 bypass the server and its ledger. A custom scheme keeps every read on the
 server, where the ledger records it.
+
+(`file://` was considered and rejected, 2026-10-27 review: file URIs embed
+deployment-specific absolute paths, breaking portable stamp-compare notes;
+some clients resolve `file://` against their own filesystem; and
+`policy://status` is generated content, not a file on disk. The scheme is
+the type system.)
 
 **ttlMs values are governance parameters, not performance tuning.** The TTL
 is the maximum time an agent may act on possibly-superseded law. Proposed:
@@ -125,10 +134,13 @@ per-resource commits against the stamps it recorded when it read the law.
   subscription — it is the AGENTS.md boot ritual plus `policy://status`.
   Push is cheap garnish; pull is structure.
 
-## 5. Consultation ledger
+## 5. Consultation ledger (opt-in)
 
-Append-only JSONL at `DSA_LEDGER_DIR/consultations.jsonl`. One line per
-`resources/list` and `resources/read`:
+Recording is **off by default**, gated behind a run flag:
+`--record-requests`. A server started without it writes nothing, ever —
+consultations leave no trace. A server started with it appends one JSONL
+line per `resources/list` and `resources/read` to
+`DSA_LEDGER_DIR/consultations.jsonl` (default `.ledger/`, gitignored):
 
 ```json
 {"ts":"2026-10-27T19:04:12Z","client":{"name":"codex","version":"0.9.0"},
@@ -137,12 +149,14 @@ Append-only JSONL at `DSA_LEDGER_DIR/consultations.jsonl`. One line per
 
 - **Records who asked; never judges compliance.** No agent identity beyond
   the clientInfo the host app volunteers at initialize.
-- **Local by default.** Each deployment's ledger stays on that deployment's
-  machine. A hosted deployment that centralizes ledgers would need its own
-  consent story before it exists (§9).
-- **Fail-open:** if the ledger cannot be written, reads still succeed and
-  the failure goes to stderr. Access to law must not depend on audit
-  infrastructure.
+- **Local by default; centralization is a deployment decision.** Each
+  recording deployment's ledger stays on its own machine. A centralized
+  (global) ledger would need its own consent story before it exists — which
+  is why recording is flag-gated rather than always-on: turning it on is
+  someone's explicit act, reviewable in the process that started the server.
+- **Fail-open:** if recording is enabled and the ledger cannot be written,
+  reads still succeed and the failure goes to stderr. Access to law must not
+  depend on audit infrastructure.
 
 ## 6. Provisions
 
@@ -193,15 +207,21 @@ ledger lines written for reads; ledger failure does not fail the read;
 unknown URI → error (the cache-key rule forbids serving a guessed or
 neighbor-resource response).
 
-## 9. Open questions
+## 9. Rulings & open questions
 
-1. Server code in-repo (`server/`) vs separate repo — recommendation:
-   in-repo.
-2. Package name for a future npm publish (`dsa-policy-mcp`?) — defer until
-   publishing is real.
-3. ttlMs values (1h policies / 5m overview) — confirm or adjust.
-4. GOVERNANCE.md activation block vs law-only server — conditional note now,
-   or it sets pathway two's ship date.
-5. Ledger retention: deploying org's decision; the spec documents it as
-   theirs, not ours.
-6. `.gitignore` creation + `.model` pre-add — housekeeping commit candidate.
+1. **Resolved:** server code in-repo (`server/`).
+2. **Resolved:** package name deferred until publishing is real.
+3. **Resolved:** ttlMs 1h policies / 5m overview. Implementation: named
+   constants at the top of `resources.ts` under a banner comment marking
+   them governance parameters with a pointer here — visible, one-line
+   tunable.
+4. **Open — reviewer ruling needed:** GOVERNANCE.md's "Governance &
+   Activation instructions" block instructs agents to call `invitation`;
+   law-only v1 has no such tool, so an agent following that block gets an
+   error. Options: (a) conditional note in the block now ("call
+   `invitation` if the server offers it"), or (b) block stays as-is and
+   sets pathway two's ship date.
+5. **Resolved:** ledger recording opt-in via `--record-requests`, default
+   off (§5).
+6. **Resolved:** `.gitignore` created — `.model`, `.ledger/`,
+   `node_modules/`; `server/dist` stays committed per §6.
