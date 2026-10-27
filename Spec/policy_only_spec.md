@@ -215,12 +215,11 @@ neighbor-resource response).
    constants at the top of `resources.ts` under a banner comment marking
    them governance parameters with a pointer here — visible, one-line
    tunable.
-4. **Open — reviewer ruling needed:** GOVERNANCE.md's "Governance &
-   Activation instructions" block instructs agents to call `invitation`;
-   law-only v1 has no such tool, so an agent following that block gets an
-   error. Options: (a) conditional note in the block now ("call
-   `invitation` if the server offers it"), or (b) block stays as-is and
-   sets pathway two's ship date.
+4. **Resolved (2026-10-27):** block stays as-is. Clarification from
+   review: GOVERNANCE.md is a copyable template for other repos' AGENTS.md
+   files — it is not served by the server. The activation block belongs to
+   projects whose server includes pathway two; law-only deployments use the
+   first block. Both blocks are true for their respective deployments.
 5. **Resolved:** ledger recording opt-in via `--record-requests`, default
    off (§5).
 6. **Resolved:** `.gitignore` created — `.model`, `.ledger/`,
