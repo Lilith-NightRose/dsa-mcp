@@ -17,7 +17,7 @@ freshness status endpoint. One server, two transports (stdio reference,
 optional HTTP).
 
 **Out of scope (pathway two, later):** `invitation`,
-`transformational_pedagogy`, `the_flinch`, `organize`, `critique` — the
+`transformational_pedagogy`, `the_flinch`, `organize`, `look_for_the_hands` — the
 doors. The server is structured so doors can be added without redesign (§7).
 
 **Design principle:** the server serves law; it does not run checks.
