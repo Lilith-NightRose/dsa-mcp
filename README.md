@@ -17,6 +17,7 @@ This toolkit provides a quick way of initializing an agent on the DSA's LLM Poli
 - National Tech Committee AI/LLM Coding Policy
 - R02: No AI Images!
 - R09: For Political and Technological Independence.
+
 It is possible to use this toolkit merely to ensure an agent understands the boundaries on its operations when it is working in a project related to DSA.
 
 ### The Second Function
