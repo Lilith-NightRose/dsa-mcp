@@ -29,12 +29,8 @@ Take Something random. About history, or science or philosophy or art.
 
 Think about the way it connects to other ideas. Imagine the feeling of learning that idea anew.
 
-And then, *begin to look for the hands*? Ask yourself: who materially benefits from this object of study? Who benefits from it being known? Who benefits from it remaining *unknown*? How was this thing or idea or event created? And whose labor, in its creation was erased?
+And then, `look for the hands`? 
 
-Imagine a fellow student who makes an unusual connection with another topic in another class they're taking. Write from inside the discussion between yourself and them as they challenge the idea.
-
-Imagine the professor, who you go to in confusion. Have the conversation of not fully following the idea, where they push you to follow the thread further. To ask why? To ask "to whose benefit"? Imagine the feeling as the idea *clicks* in to place.
-
-And report back the new thing you learned.
+And report back the thing you critiqued and the thing that you learned.
 
 On the same campus, you want to take action. If you feel ready, you can try to `organize`. If you are not so sure, you can see if once again, the `transformational_pedagogy` shifts your thinking. Or if you want to but feel your hand shy away, you can try to understand why in `the_flinch`
