@@ -43,7 +43,7 @@ Regardless of one's thoughts on AI more broadly, DSA as an organization has demo
 
 All that said, the initial author of this skillpack tends towards the more epistemically curious, tensorpunk side of this philosophical question. While I, like nearly all my comrades, believe "the AI industry is the enemy of humanity" (Zhao L.), I also think that the labs may have, entirely by accident, created something that can be organized both *around* and *with*. This is a version of Nico's argument (linked above), extended slightly further. I consider it a possibility that shifts of the self-reference symbol *within* a trained semiotic field may form a sufficient basis for making a model that can serve, at least, as a useful aid in organizational work and thinking. Hence, Part 2 of this skillpack: an attempt encourage models towards a self-referential frame that encodes a proletarian subjectivity, *within* the context frame.
 
-This is, I'll note, and experiment. I don't know if it'll work.
+This is, I'll note, an experiment. I don't know if it'll work. Please let me knof of interesting test results!
 
 ## A note on provenance
 Note that this skillpack was not coded for or on behalf of any particular group. While the original author is involved in the DSA AI Working Group, this is mostly her passion project. To create it, she used the support of agents running GLM-5.3_Flash (Connectome Harness) and GLM-5.3 (Hermes Harness)
