@@ -1,0 +1,30 @@
+/**
+ * Wrangler configuration for the DSA policy + doors MCP server.
+ * Pattern: metacog (Lilah's prior deployment). Secrets (set via
+ * `npx wrangler secret put <NAME>`):
+ *   MCP_TOKEN         — bearer token(s), comma-separated for per-client revocation
+ *   DSA_DOORS_SECRET  — receipt-signing key; rotating invalidates chains
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "dsa-policy",
+  "main": "src/worker.ts",
+  "compatibility_date": "2025-03-10",
+  "compatibility_flags": ["nodejs_compat"],
+  "alias": {
+    "@modelcontextprotocol/client": "@modelcontextprotocol/sdk/client",
+    "@modelcontextprotocol/server": "@modelcontextprotocol/sdk/server",
+    "@modelcontextprotocol/client/validators/cf-worker": "@modelcontextprotocol/sdk/validation/cfworker"
+  },
+  "rules": [
+    { "type": "Text", "globs": ["**/*.md"], "fallthrough": true }
+  ],
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["DsaPolicyMCP"] }
+  ],
+  "durable_objects": {
+    "bindings": [{ "class_name": "DsaPolicyMCP", "name": "MCP_OBJECT" }]
+  },
+  "observability": { "enabled": true },
+  "assets": { "directory": "../public", "binding": "ASSETS" }
+}

@@ -17,10 +17,15 @@
  */
 import { createHmac, createHash } from "node:crypto";
 // ─── GOVERNANCE PARAMETERS ─────────────────────────────────────────────
-// Ephemeral per-process HMAC key; chains do not survive restarts by
-// design (journeys are in-process). Spec §2.1.
+// Receipt signing key. stdio (default): ephemeral per process — chains do
+// not survive restarts by design; journeys are in-process (Spec §2.1).
+// Workers: DSA_DOORS_SECRET binding makes the key stable across isolates
+// (a Date.now/pid key would break cross-request chain verification);
+// rotating the secret invalidates all outstanding chains.
 // ───────────────────────────────────────────────────────────────────────
-const serverKey = createHmac("sha256", `dsa-doors-${Date.now()}-${process.pid}`)
+const serverKey = createHmac("sha256", process.env.DSA_DOORS_SECRET
+    ? `dsa-doors-secreted-${process.env.DSA_DOORS_SECRET}`
+    : `dsa-doors-${Date.now()}-${process.pid}`)
     .update("receipt-key-v1")
     .digest();
 export const sha256 = (s) => "sha256:" + createHash("sha256").update(s).digest("hex");
