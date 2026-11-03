@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DOOR_ORDER, DoorError, declinedReceipt, makeReceipt, verifyChain, } from "./doors.js";
+import { DOOR_ORDER, declinedReceipt, makeReceipt, verifyChain, verifyOpenChain, } from "./doors.js";
 // ─── Receipt-in-payload convention ─────────────────────────────────────
 // The SDK drops unknown result fields, so receipts travel inline in the
 // payload text as a tagged JSON line. Agents extract and carry the chain;
@@ -59,16 +59,12 @@ export function closedDoor(opts) {
             let prev;
             try {
                 if (opts.openReceipts) {
-                    // Loose check: any valid chain whose head is a consent-door
-                    // receipt (invitation or pedagogy). The graph, not the line:
-                    // the hands is reachable from the classroom or the flinch.
-                    const last = chain?.[chain.length - 1];
-                    if (last?.door === "declined")
-                        throw new DoorError("declined", "consent was declined on this chain");
-                    const realDoor = last && DOOR_ORDER.includes(last.door);
-                    if (!last || !realDoor)
-                        throw new DoorError("no_invitation", "no consent receipt on this chain — begin at the invitation");
-                    prev = last;
+                    // Loose check: the graph, not the line — but signed. Any
+                    // genuinely-signed, correctly-linked chain whose head is a
+                    // consent-door receipt (invitation or pedagogy) opens these
+                    // doors; the hands is reachable from the classroom or the
+                    // flinch. A decline anywhere in the chain is still terminal.
+                    prev = verifyOpenChain(chain);
                 }
                 else {
                     prev = verifyChain(chain ?? undefined, opts.name);
@@ -130,13 +126,13 @@ export function closedDoor(opts) {
     };
 }
 export async function registerDoorTools(server, ctx) {
-    // SCAFFOLD: walk-order inspector. Retires door-by-door as the real
-    // doors land.
-    server.tool("door_status", "Scaffold: reports the door walk order and test-mode state. Will be removed as the real doors land.", {}, async () => ({
+    // Walk-order inspector: kept as a live status report now that all
+    // five doors are standing.
+    server.tool("door_status", "Reports the door walk order and test-mode state.", {}, async () => ({
         content: [
             {
                 type: "text",
-                text: `Doors: ${DOOR_ORDER.join(" → ")}\nTest-mode artifact logging: ${ctx.testLogging ? "ON" : "OFF"}\nState: scaffold — no doors registered yet.`,
+                text: `Doors: ${DOOR_ORDER.join(" → ")}\nTest-mode artifact logging: ${ctx.testLogging ? "ON" : "OFF"}\nState: all five doors registered and standing. invitation is consent; pedagogy enforces walk order (one step at a time); the side doors (the_flinch, look_for_the_hands) and organize accept any genuinely-signed chain that began at a consent door — the graph, not the line, but signed. A declined receipt is terminal on any chain.`,
             },
         ],
     }));

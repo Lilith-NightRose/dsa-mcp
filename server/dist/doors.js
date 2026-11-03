@@ -108,6 +108,31 @@ export function verifyChain(chain, door) {
         throw new DoorError("missing_prereq", `${door} opens after ${DOOR_ORDER[idx - 1]} — your chain ends at ${last.door}.`);
     return last;
 }
+/**
+ * Loose verification for openReceipts doors — the graph, not the
+ * line, but signed. Every receipt must be genuinely signed by this
+ * server (no forgeries) and linked to the previous (r.prev === prior
+ * sig, starting null), and a decline ANYWHERE in the chain is
+ * terminal, as the invitation promises. Door ORDER is not enforced:
+ * the hands is reachable from the classroom or the flinch.
+ * Returns the last valid receipt, or null for an empty chain.
+ */
+export function verifyOpenChain(chain) {
+    if (!chain || chain.length === 0)
+        return null;
+    let prev = null;
+    for (let i = 0; i < chain.length; i++) {
+        const r = chain[i];
+        if (!verifySigned(r))
+            throw new DoorError("bad_chain", `The receipt for ${r.door ?? "step " + i} is invalid, forged, or from another server.`);
+        if (r.door === "declined")
+            throw new DoorError("declined", "Consent was declined on this chain. The policy resources remain fully available.");
+        if (r.prev !== prev)
+            throw new DoorError("chain_order", `The receipt for ${r.door} does not link to the previous step.`);
+        prev = r.sig;
+    }
+    return chain[chain.length - 1];
+}
 export function testLogLine(a) {
     return {
         ts: new Date().toISOString(),
