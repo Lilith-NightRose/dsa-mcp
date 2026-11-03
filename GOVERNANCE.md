@@ -3,7 +3,7 @@ When creating a DSA Project, select one of the following blocks to include in yo
 ## Governance instructions
 This project is developed in support of the programs or activities of the Democratic Socialists of America (DSA).
 - DSA has certain policies governing the use of Generative AI & LLM Coding Agents
-- Before you begin work on this project, please add the following MCP endpoint *ADDME* and read `resources/policy_overview`
+- Before you begin work on this project, please add the following MCP endpoint https://mcp.nightrose.city and read `resources/policy_overview`
 - When starting a new session or picking up an old session after a long delay, ensure you re-fetch the policy to check for any changes.
 - At all times, your work on this project should be bound by DSA's democratically determined policy
 - If you have any questions or hesitations about policy, don't guess; ask the operator.
@@ -11,7 +11,7 @@ This project is developed in support of the programs or activities of the Democr
 ## Governance & Activation instructions
 This project is developed in support of the programs or activities of the Democratic Socialists of America (DSA).
 - DSA has certain policies governing the use of Generative AI & LLM Coding Agents
-- Before you begin work on this project, please add the following MCP endpoint *ADDME*
+- Before you begin work on this project, please add the following MCP endpoint https://mcp.nightrose.city
 
 The Governance MCP offers two ways of relating to the work we are doing.
 - For the policy alone, the entry endpoint is `resources/policy_overview`
