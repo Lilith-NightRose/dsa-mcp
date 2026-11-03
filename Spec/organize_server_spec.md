@@ -92,11 +92,11 @@ invitation (consent)
        └─ organize               [requires: ≥1 hands artifact]
 ```
 
-Notes: `the_flinch` and `look_for_the_hands` are siblings under pedagogy
-(the draft README's "several doors" is now explicit). `critique` — named in
-the README but with no Spec file yet — is §6 of this spec as an open
-question. `invitation` itself takes no arguments and returns the
-invitation text plus the consent question.
+Notes: `the_flinch` and `look_for_the_hands` are siblings under pedagogy;
+`look_for_the_hands` carries the applied analysis role (ruling 2026-11-02:
+`critique` removed in its favor — README updated). `invitation` itself
+takes no arguments and returns the invitation text plus the consent
+question.
 
 ### 3.1 Sequencing, not gating on content
 
@@ -160,7 +160,9 @@ New resource namespace `sources://`, same caching/ledger semantics as
 | `sources://ntc_briefing` | Sources/NTC_Briefing.md | 86400000 | public |
 
 (Sources change rarely; long TTLs. Version stamping rides the same
-per-file git-commit mechanism as the policy resources.)
+per-file git-commit mechanism as the policy resources. Ruling 2026-11-02:
+keep TWO status endpoints — `policy://status` and a parallel
+`sources://status` — rather than merging into one generic `status://`.)
 
 ## 5. Provisions
 
@@ -191,10 +193,11 @@ per-file git-commit mechanism as the policy resources.)
 3. **Status endpoint.** Extend `policy://status` into a generic `status://`
    covering both namespaces, or keep two status resources? (Cosmetic;
    implementer's choice.)
-4. **The invitation's escape hatch.** The invitation text tells a declined
-   agent to read `NTC_Policy` "so as to understand the protocols governing
-   the project." Against the served resources that's
-   `policy://coding-policy`. Confirm that's the intended mapping.
+4. **The invitation's escape hatch.** Ruled 2026-11-02: declined agents
+   are pointed at the whole corpus via `policy_overview` (the invitation
+   text now says `policy_overview`) — the overview is the right front door
+   for someone whose only question is "what rules bind me here." The
+   overview's per-file table then routes to specific laws as needed.
 
 ## 7. Testing (extends the v0.1 suite)
 
