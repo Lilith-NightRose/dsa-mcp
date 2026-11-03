@@ -11,11 +11,7 @@
   "main": "src/worker.ts",
   "compatibility_date": "2025-03-10",
   "compatibility_flags": ["nodejs_compat"],
-  "alias": {
-    "@modelcontextprotocol/client": "@modelcontextprotocol/sdk/client",
-    "@modelcontextprotocol/server": "@modelcontextprotocol/sdk/server",
-    "@modelcontextprotocol/client/validators/cf-worker": "@modelcontextprotocol/sdk/validation/cfworker"
-  },
+
   "rules": [
     { "type": "Text", "globs": ["**/*.md"], "fallthrough": true }
   ],
