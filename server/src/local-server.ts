@@ -11,11 +11,8 @@
  */
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
-import { POLICY_RESOURCES, TTL_STATUS_MS } from "./resources.js";
+import { registerLawResources, POLICY_RESOURCES } from "./resources.js";
 import { Ledger } from "./ledger.js";
-import { fileCommit, repoCommit } from "./version.js";
 import { registerDoorTools } from "./tools.js";
 import type { DoorContext } from "./doors.js";
 
@@ -34,60 +31,7 @@ const server = new McpServer(
   { capabilities: { resources: { listChanged: true }, tools: {} } }
 );
 
-const cached = (
-  contents: any,
-  ttlMs: number
-): any => ({ contents, ttlMs, cacheScope: "public" });
-
-for (const r of POLICY_RESOURCES) {
-  server.registerResource(
-    r.name,
-    r.uri,
-    { title: r.name, description: r.description, mimeType: r.mimeType },
-    async (uri: any) => {
-      const text = readFileSync(join(policyDir, r.file), "utf8");
-      ledger.record({
-        ts: new Date().toISOString(),
-        method: "resources/read",
-        uri: r.uri,
-        commit: fileCommit(policyDir, r.file),
-      });
-      return cached(
-        [{ uri: uri.href, mimeType: r.mimeType, text }],
-        r.ttlMs
-      );
-    }
-  );
-}
-
-server.registerResource(
-  "Policy Status",
-  "policy://status",
-  {
-    title: "Policy Status",
-    description: "Per-resource git commit stamps for the policy corpus.",
-    mimeType: "application/json",
-  },
-  async (uri: any) => {
-    const status = {
-      commit: repoCommit(policyDir),
-      checked_at: new Date().toISOString(),
-      policies: Object.fromEntries(
-        POLICY_RESOURCES.map((r) => [r.uri, fileCommit(policyDir, r.file)])
-      ),
-    };
-    ledger.record({
-      ts: new Date().toISOString(),
-      method: "resources/read",
-      uri: "policy://status",
-      commit: status.commit,
-    });
-    return cached(
-      [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(status, null, 2) }],
-      TTL_STATUS_MS
-    );
-  }
-);
+registerLawResources(server, policyDir, ledger);
 
 await registerDoorTools(server, doorCtx);
 

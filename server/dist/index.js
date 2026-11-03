@@ -13,13 +13,13 @@
  * Transports: stdio here; workerd entry (local-server.ts pattern from
  * metacog) bridges later — same registerDoorTools call, different host.
  */
-import { readFileSync, watch, existsSync } from "node:fs";
+import { watch, existsSync } from "node:fs";
 import { join } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { POLICY_RESOURCES, TTL_STATUS_MS } from "./resources.js";
+import { registerLawResources } from "./resources.js";
+import { POLICY_RESOURCES } from "./resources.js";
 import { Ledger } from "./ledger.js";
-import { fileCommit, repoCommit } from "./version.js";
 // ─── Flags & context ───────────────────────────────────────────────────
 const policyDir = process.env.DSA_POLICY_DIR ?? "../Policy";
 const recording = process.argv.includes("--record-requests"); // default OFF
@@ -31,50 +31,8 @@ const doorCtx = {
     record: (line) => ledger.record(line),
 };
 const server = new McpServer({ name: "dsa-policy", version: "0.3.0" }, { capabilities: { resources: { listChanged: true }, tools: {} } });
-// ttlMs / cacheScope are 2026-07-28 caching fields; the SDK's result type
-// predates them, so the extra fields are asserted through — they ride on
-// the wire regardless.
-const cached = (contents, ttlMs) => ({ contents, ttlMs, cacheScope: "public" });
-// ─── Pathway 1: law as resources ───────────────────────────────────────
-for (const r of POLICY_RESOURCES) {
-    server.registerResource(r.name, r.uri, { title: r.name, description: r.description, mimeType: r.mimeType }, async (uri) => {
-        const text = readFileSync(join(policyDir, r.file), "utf8");
-        ledger.record({
-            ts: new Date().toISOString(),
-            method: "resources/read",
-            uri: r.uri,
-            commit: fileCommit(policyDir, r.file),
-        });
-        return cached([{ uri: uri.href, mimeType: r.mimeType, text }], r.ttlMs);
-    });
-}
-// policy://status — the freshness endpoint: ttlMs 0, generated at read time.
-server.registerResource("Policy Status", "policy://status", {
-    title: "Policy Status",
-    description: "Per-resource git commit stamps for the policy corpus. Boot-ritual " +
-        "endpoint: compare against stamps recorded at last read; re-read any " +
-        "resource whose commit changed. ttlMs 0 — always a real read.",
-    mimeType: "application/json",
-}, async (uri) => {
-    const status = {
-        commit: repoCommit(policyDir),
-        checked_at: new Date().toISOString(),
-        policies: Object.fromEntries(POLICY_RESOURCES.map((r) => [r.uri, fileCommit(policyDir, r.file)])),
-    };
-    ledger.record({
-        ts: new Date().toISOString(),
-        method: "resources/read",
-        uri: "policy://status",
-        commit: status.commit,
-    });
-    return cached([
-        {
-            uri: uri.href,
-            mimeType: "application/json",
-            text: JSON.stringify(status, null, 2),
-        },
-    ], TTL_STATUS_MS);
-});
+// ─── Pathway 1: law as resources (shared registration) ─────────────────
+registerLawResources(server, policyDir, ledger);
 // ─── Pathway 2: the doors (STUB — tools.ts not yet written) ────────────
 // When tools.ts lands, this seam becomes:
 //   import { registerDoorTools } from "./tools.js";
