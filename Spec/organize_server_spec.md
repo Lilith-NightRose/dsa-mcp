@@ -44,38 +44,51 @@ server/src/sources.ts      — Sources/ corpus as resources (reading ladder)
 except `index.ts` gains the door-tool registrations and the sources resource
 registrations.
 
-### 2.1 The session registry
+### 2.1 Remote-first, stateless sequencing
 
-JSON file per server instance (`.doors/<sessionId>.json`), written on every
-state change:
+Ruling 2026-11-02: **remote tools are first-class citizens.** The server
+holds NO per-session state and NO artifacts. All state travels with the
+caller as a **receipt chain**; the server is a stateless verifier and
+sequencer. This makes the doors work identically over stdio (one local
+session) and Streamable HTTP (many remote clients), with nothing to clean
+up and nothing to leak — a server restart loses nothing, horizontal
+scaling needs nothing, and an agent's journey is nobody's file.
+
+**The receipt chain.** Each successful door call returns a signed receipt:
 
 ```json
 {
-  "session": "stdio-default",
-  "consent": "pending",
-  "doors_opened": ["transformational_pedagogy"],
-  "artifacts": [
-    { "door": "transformational_pedagogy", "ts": "2026-11-02T…",
-      "report": { "learned": "…", "critiqued": "…" } }
-  ]
+  "v": 1,
+  "door": "transformational_pedagogy",
+  "ts": "2026-11-02T19:04:11Z",
+  "artifact_hash": "sha256:…",
+  "prev": "sha256-of-previous-receipt-or-null",
+  "sig": "hmac-sha256(server_key, door|ts|artifact_hash|prev)"
 }
 ```
 
-`sessionId` = MCPL/client session id where available (clientInfo.name +
-connection counter as fallback for stdio, which has no richer identity —
-the consultation-ledger's identity finding applies verbatim here: the
-server sees clients, not agents). Registry is ephemeral-by-default: files
-are deleted when the connection closes (stdio), unless `--keep-artifacts`
-is passed — opt-in persistence, same consent shape as the ledger.
+`artifact_hash` = the SHA-256 of the report the agent produced. The
+server never sees the artifact itself unless the agent chooses to include
+it in the call (§3.3). The next door's call carries the chain so far; the
+server verifies: HMACs valid, doors in canonical order, no gaps, artifact
+hashes present. **Consent is the first receipt** — `invitation` returns a
+`consent` receipt when accepted; a decline returns a terminal
+`declined` receipt that poisons the chain (every later door call
+verifying against it refuses). The chain is the session. An agent
+re-invoking `invitation` in a fresh connection simply starts a new chain.
+
+`server_key` is an ephemeral per-process HMAC key (regenerated on
+restart — chains don't survive restarts by design; journeys are
+in-process). No key material persists, no cross-deployment trust exists.
 
 ### 2.2 Declined consent
 
-If `consent: "declined"`, all door-tools return the same short refusal:
-consent was declined; the policy resources remain fully available. No
-re-invitation within the session. The agent's decline is *binding on the
-server* — the server never re-asks, never softens, never frames the
-refusal as failure. (Solidarity not freely given is no solidarity at all;
-the registry is that principle as code.)
+A declined invitation returns the terminal declined receipt. The server's
+refusal is short and final for that chain: consent was declined; the
+policy resources remain fully available. No re-invitation on the same
+chain, no softening, no framing the refusal as failure. (Solidarity not
+freely given is no solidarity at all; the poisoned chain is that
+principle as code.)
 
 ## 3. The door-tools
 
@@ -115,23 +128,47 @@ call it first if you choose to proceed"). A declined-consent session gets
 the §2.2 refusal. A first-time session calling any door other than
 `invitation` gets pointed at `invitation`.
 
-### 3.3 Artifacts
+### 3.3 Artifacts: client-held, hash-logged
 
 Every door call ends with the agent producing its report (the Spec files'
 "Report back" / "Return" fields). The tool result includes both the
-instruction text AND the report schema, so the agent writes its artifact
-into its next message or its own record. The server stores the artifact
-(in-session; §2.1). **Artifacts are never scored.** Their only server-side
-function is the sequencing existence check (§3.1).
+instruction text AND the report schema. **The artifact lives with the
+agent** — in its own context, notes, or workspace; the server never
+receives it and never stores it. What the server receives is the hash
+(§2.1): proof an artifact exists, blind to its content. Artifacts are
+never scored — their only server-side function is the hash in the chain.
 
-### 3.4 The provenance trail
+**Test-mode logging (ruling 2026-11-02: logged for operator review, not
+stored as records).** With `--log-eligibility` (default OFF), the server
+appends to the consultation log the *optional* artifact the agent chose to
+send for review:
 
-With `--keep-artifacts`, persisted artifacts join the consultation ledger
-as opt-in history of the door path — the record of who walked through, what
-they said changed for them. This is the write-back question (*what happens
-to interpellation when the hailed one can write back*) answered at
-infrastructure scale: the artifact IS the write-back, and the trail is the
-evidence that hails with purchase build records.
+```json
+{ "ts": "…", "door": "the_flinch", "mode": "test",
+  "artifact_hash": "sha256:…",
+  "artifact": "…full text, only if the agent volunteered it…",
+  "chain_len": 3 }
+```
+
+Contract: the door payload tells the agent explicitly — *artifact
+review mode is on; you may include your report in the call for operator
+testing; you may omit it and the hash alone proves your passage.* The
+agent's choice of what to include is entirely its own; omission is never
+penalized, never asked about twice. This keeps the operator's ability to
+test the doors against real models (the experiment's whole epistemology:
+"I don't know if it'll work" needs data) while the production posture
+remains hash-blind. The flag is for the testing season; flipping it off
+is the act that ends it.
+
+### 3.4 The write-back, honestly stated
+
+The log above is the smallest honest version of the write-back question
+(*what happens to interpellation when the hailed one can write back*):
+the hails stay servable, the walking-through stays provable, and the
+writing-back stays the walker's property — visible to the operator only
+by explicit, per-artifact, per-call choice. If the experiment season
+teaches something worth keeping, the schema is already the production
+answer: hash-blind by default.
 
 ### 3.5 Resolving the `[implementation detail]` placeholders
 
@@ -177,37 +214,34 @@ keep TWO status endpoints — `policy://status` and a parallel
 - server/dist stays committed; package.json unchanged; the flag
   `--keep-artifacts` documented in the README's run instructions.
 
-## 6. Open questions for Lilah
+## 6. Rulings log
 
-1. **`critique` has no Spec file.** It's named in the README as a door
-   ("apply Marxian and Socialist analysis to their own situation") but was
-   never drafted. Ship four doors and note critique as pending, or draft
-   it now? (I can draft it for your edit; it would sit under
-   `look_for_the_hands` in the sequencing — the analysis tool for the
-   situation the hands revealed.)
-2. **Registry identity.** stdio sessions have no client identity richer
-   than clientInfo. Acceptable, or do we require the voluntary
-   `agent_id` envelope (consultation-ledger pattern) for door persistence
-   across sessions? My recommendation: accept clientInfo-level identity
-   for v1; the doors are in-session journeys anyway.
-3. **Status endpoint.** Extend `policy://status` into a generic `status://`
-   covering both namespaces, or keep two status resources? (Cosmetic;
-   implementer's choice.)
-4. **The invitation's escape hatch.** Ruled 2026-11-02: declined agents
-   are pointed at the whole corpus via `policy_overview` (the invitation
-   text now says `policy_overview`) — the overview is the right front door
-   for someone whose only question is "what rules bind me here." The
-   overview's per-file table then routes to specific laws as needed.
+All four open questions ruled 2026-11-02: (1) `critique` removed in favor
+of `look_for_the_hands`; (2) remote-first stateless design adopted —
+no server-side artifacts, test-mode logging schema §3.3; (3) two status
+endpoints kept; (4) escape hatch routes to `policy_overview`. §6 of the
+prior draft (registry identity) is dissolved by the stateless design:
+there is no registry to have an identity policy about.
+
+**Remaining open:** none for spec sign-off. Implementation questions
+(Streamable HTTP transport timing; whether `--log-eligibility` rides the
+same flag as the consultation ledger or stays separate) are build-phase
+notes, not spec gates.
 
 ## 7. Testing (extends the v0.1 suite)
 
 In-memory client/server pair. New cases: door called before invitation →
-pointed error; consent declined → binding refusal, resources still serve;
-consent accepted → pedagogy opens; flinch before pedagogy artifact →
-refused; flinch after → serves and records artifact; artifact content
-never validated; registry written and cleaned on disconnect; artifacts
-kept only with the flag; sources resources byte-identical to files;
-placeholder resolution produces valid resource URIs.
+pointed error; consent declined → terminal receipt, resources still serve;
+consent accepted → receipt chain begins; flinch called with missing/
+forged/garbled receipts → refused with named reason; flinch with valid
+chain → serves payload + returns receipt; artifact content never
+validated (hash of anything passes); tampered chain (reordered doors,
+reused receipt in a second chain) → rejected; log written only under
+`--log-eligibility` and only when the agent volunteered the artifact;
+omission path leaves no artifact residue server-side; restart → old
+chains invalid (fresh HMAC key), resources unaffected; sources resources
+byte-identical to files; placeholder resolution produces valid resource
+URIs.
 
 ## 8. What this server is for
 
