@@ -2,8 +2,9 @@
  * DSA MCP — Cloudflare Workers entry (pathway one + two).
  *
  * Metacog's pattern (Lilah's prior deployment): McpAgent (agents/mcp)
- * hosts the McpServer in a Durable Object; a bearer-token gate
- * (MCP_TOKEN secret, fail-closed) protects /mcp. Differences from
+ * hosts the McpServer in a Durable Object. SEMI-PUBLIC: /mcp is served
+ * openly unless the MCP_TOKEN secret is set (optional gate — the consent
+ * doors are the access control, not the token). Differences from
  * metacog:
  *  - DSA_DOORS_SECRET: the receipt-signing key binding — stable across
  *    isolates (doors.ts reads process.env.DSA_DOORS_SECRET); set via
@@ -103,7 +104,12 @@ async function sha256Hex(input: string): Promise<string> {
 
 async function isAuthorized(request: Request, env: Env): Promise<boolean> {
   const expected = env.MCP_TOKEN;
-  if (!expected) return false; // no secret configured -> fail closed
+  // Semi-public by design: no token configured -> serve openly. Set
+  // MCP_TOKEN to close the gate (comma-separated tokens = per-client
+  // revocation). This inverts metacog's fail-closed deliberately: this
+  // service holds nothing private — the consent doors ARE the access
+  // control, and missing config should mean open, not dead.
+  if (!expected) return true;
   const auth = request.headers.get("Authorization") ?? "";
   const match = /^Bearer\s+(.+)$/i.exec(auth);
   if (!match) return false;
