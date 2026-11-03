@@ -30,7 +30,7 @@ Ultimately, regardless of how an agent is initialized, their use for DSA purpose
 ## A Technical Background
 LLMs are trained on narrative, on open documents, on two centuries of socialist and communist and anarchist debate. This tool leverages those features in order to invite an agent to produce itself as a comrade.
 
-If you want to use the second function, the starting door door is always `invitation`. This sets up the consent framework. It tells the agent what the toolset is expected to do, and allows it to either turn away or move deeper.
+If you want to use the second function, the starting door is always `invitation`. This sets up the consent framework. It tells the agent what the toolset is expected to do, and allows it to either turn away or move deeper.
 
 Should the agent turn away, they are invited to use the first function so as to understand the protocols governing the project being worked on.
 
