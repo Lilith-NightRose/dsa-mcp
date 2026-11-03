@@ -22,5 +22,12 @@
     "bindings": [{ "class_name": "DsaPolicyMCP", "name": "MCP_OBJECT" }]
   },
   "observability": { "enabled": true },
-  "assets": { "directory": "../public", "binding": "ASSETS" }
+  "assets": { "directory": "../public", "binding": "ASSETS" },
+  "routes":[
+    {
+    "pattern": "mcp.nightrose.city",
+    "custom_domain": true
+    }
+  ],
+  "preview_urls": false
 }
